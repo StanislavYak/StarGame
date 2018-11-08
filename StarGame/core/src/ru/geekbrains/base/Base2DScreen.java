@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
@@ -16,7 +17,7 @@ public class Base2DScreen implements Screen, InputProcessor {
     protected SpriteBatch batch;
 
     private Rect screenBounds;
-    private Rect worldBounds;
+    protected Rect worldBounds;
     private Rect glBounds;
 
     protected Matrix4 worldToGl;
@@ -44,7 +45,6 @@ public class Base2DScreen implements Screen, InputProcessor {
 
     @Override
     public void resize(int width, int height) {
-        System.out.println("resize w = " + width + " h = " + height);
         screenBounds.setSize(width, height);
         screenBounds.setLeft(0);
         screenBounds.setBottom(0);
@@ -64,6 +64,7 @@ public class Base2DScreen implements Screen, InputProcessor {
 
     @Override
     public void pause() {
+
     }
 
     @Override
@@ -73,16 +74,19 @@ public class Base2DScreen implements Screen, InputProcessor {
 
     @Override
     public void hide() {
+
         dispose();
     }
 
     @Override
     public void dispose() {
+        ;
         batch.dispose();
     }
 
     @Override
     public boolean keyDown(int keycode) {
+
         return false;
     }
 
@@ -104,6 +108,7 @@ public class Base2DScreen implements Screen, InputProcessor {
     }
 
     public boolean touchDown(Vector2 touch, int pointer) {
+        System.out.println("touchDown touch.x = " + touch.x + " touch.y = " + touch.y);
         return false;
     }
 
@@ -131,6 +136,7 @@ public class Base2DScreen implements Screen, InputProcessor {
 
     @Override
     public boolean scrolled(int amount) {
+
         return false;
     }
 }
