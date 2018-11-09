@@ -11,7 +11,11 @@ import ru.geekbrains.pool.BulletPool;
 
 public class Enemy extends Ship {
 
+
+    private Vector2 speed = new Vector2(0, -0.10f);
     private Vector2 v0 = new Vector2();
+
+
 
     public Enemy(BulletPool bulletPool, Rect worldBounds, Sound shootSound) {
         super(shootSound);
@@ -24,8 +28,18 @@ public class Enemy extends Ship {
     public void update(float delta) {
         super.update(delta);
         pos.mulAdd(v, delta);
+        reloadTimer += delta;
+        if (getTop() <= worldBounds.getTop()) {
+            v.set(v0);
+        }
+        if (reloadTimer >= reloadInterval) {
+            shoot();
+            reloadTimer = 0f;
+        }
+        if (getBottom() < worldBounds.getBottom()) {
+            destroy();
+        }
     }
-
     public void set(
         TextureRegion[] regions,
         Vector2 v0,
@@ -36,6 +50,7 @@ public class Enemy extends Ship {
         float reloadInterval,
         float height,
         int hp
+
     ) {
         this.regions = regions;
         this.v0.set(v0);
@@ -46,6 +61,8 @@ public class Enemy extends Ship {
         this.reloadInterval = reloadInterval;
         this.hp = hp;
         setHeightProportion(height);
-        v.set(v0);
+        v.set(speed);
     }
+
+
 }
