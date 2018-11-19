@@ -48,6 +48,8 @@ public class EnemiesEmmiter {
     private float generateInterval = 4f;
     private float generateTimer;
 
+    private int level;
+
 
     public EnemiesEmmiter(EnemyPool enemyPool, Rect worldBounds, TextureAtlas atlas) {
         this.enemyPool = enemyPool;
@@ -111,5 +113,13 @@ public class EnemiesEmmiter {
             enemy.setBottom(worldBounds.getTop());
             enemy.pos.x = Rnd.nextFloat(worldBounds.getLeft() + enemy.getHalfWidth(), worldBounds.getRight() - enemy.getHalfWidth());
         }
+    }
+
+    public  int getLevel(){
+        return level;
+    }
+
+    public void setLevel(int level){
+        this.level = level;
     }
 }

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
 
 
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
 
 import ru.geekbrains.base.ActionListener;
 import ru.geekbrains.base.Base2DScreen;
+import ru.geekbrains.base.Font;
 import ru.geekbrains.math.Rect;
 import ru.geekbrains.pool.BulletPool;
 import ru.geekbrains.pool.EnemyPool;
@@ -33,11 +35,20 @@ import ru.geekbrains.utils.EnemiesEmmiter;
 
 public class GameScreen extends Base2DScreen implements ActionListener {
 
+    private static final int STAR_COUNT = 64;
+
+    private static final String FRAGS = "Frags: ";
+    private static final String HP = "HP: ";
+    private static final String LEVEL = "Level: ";
+
+    private StringBuilder sbFrags = new StringBuilder();
+    private StringBuilder sbHP = new StringBuilder();
+    private StringBuilder sbLevel = new StringBuilder();
+
     private enum State {PLAYING, GAME_OVER}
 
     private State state;
 
-    private static final int STAR_COUNT = 64;
 
     private int frags;
 
@@ -63,6 +74,8 @@ public class GameScreen extends Base2DScreen implements ActionListener {
     private GameOver gameOver;
     private ButtonNewGame buttonNewGame;
 
+    private Font font;
+
     @Override
     public void show() {
         super.show();
@@ -86,6 +99,10 @@ public class GameScreen extends Base2DScreen implements ActionListener {
         enemyPool = new EnemyPool(bulletPool, explosionPool, worldBounds, bulletSound);
         enemiesEmmiter = new EnemiesEmmiter(enemyPool, worldBounds, textureAtlas);
 
+        font = new Font("font/font.fnt", "font/font.png");
+        font.setFontSize(0.02f);
+
+
         music = Gdx.audio.newMusic(Gdx.files.internal("sounds/music.mp3"));
         music.setLooping(true);
         music.play();
@@ -96,7 +113,9 @@ public class GameScreen extends Base2DScreen implements ActionListener {
     public void render(float delta) {
         super.render(delta);
         update(delta);
-        checkCollisions();
+        if (state == State.PLAYING){
+            checkCollisions();
+        }
         deleteAllDestroyed();
         draw();
     }
@@ -106,8 +125,7 @@ public class GameScreen extends Base2DScreen implements ActionListener {
             stars[i].update(delta);
         }
         explosionPool.updateActiveObjects(delta);
-        switch (state) {
-            case PLAYING:
+        if (state == State.PLAYING){
                 mainShip.update(delta);
                 bulletPool.updateActiveObjects(delta);
                 enemyPool.updateActiveObjects(delta);
@@ -115,10 +133,6 @@ public class GameScreen extends Base2DScreen implements ActionListener {
                 if (mainShip.isDestroyed()) {
                     state = State.GAME_OVER;
                 }
-                break;
-            case GAME_OVER:
-                break;
-
         }
 
     }
@@ -197,7 +211,17 @@ public class GameScreen extends Base2DScreen implements ActionListener {
             enemyPool.drawActiveObjects(batch);
 
         }
+        printInfo();
         batch.end();
+    }
+
+    public void printInfo() {
+        sbFrags.setLength(0);
+        sbHP.setLength(0);
+        sbLevel.setLength(0);
+        font.draw(batch, sbFrags.append(FRAGS).append(frags), worldBounds.getLeft(), worldBounds.getTop());
+        font.draw(batch, sbHP.append(HP).append(mainShip.getHp()), worldBounds.pos.x, worldBounds.getTop(), Align.center);
+        font.draw(batch, sbLevel.append(LEVEL).append(enemiesEmmiter.getLevel()), worldBounds.getRight(), worldBounds.getTop(), Align.right);
     }
 
     @Override
@@ -216,6 +240,7 @@ public class GameScreen extends Base2DScreen implements ActionListener {
         music.dispose();
         laserSound.dispose();
         bulletSound.dispose();
+        font.dispose();
         super.dispose();
     }
 
@@ -237,26 +262,22 @@ public class GameScreen extends Base2DScreen implements ActionListener {
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer) {
-        switch (state) {
-            case PLAYING:
-                mainShip.touchDown(touch, pointer);
-                break;
-            case GAME_OVER:
-                buttonNewGame.touchDown(touch, pointer);
-                break;
+        if (state == State.PLAYING) {
+            mainShip.touchDown(touch, pointer);
+        }else {
+            buttonNewGame.touchDown(touch, pointer);
+
         }
         return false;
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
-        switch (state) {
-            case PLAYING:
-                mainShip.touchUp(touch, pointer);
-                break;
-            case GAME_OVER:
-                buttonNewGame.touchUp(touch, pointer);
-                break;
+        if (state == State.PLAYING) {
+            mainShip.touchDown(touch, pointer);
+        }else {
+            buttonNewGame.touchDown(touch, pointer);
+
         }
         return false;
     }
@@ -270,9 +291,9 @@ public class GameScreen extends Base2DScreen implements ActionListener {
 
     private void startNewGame(){
         state = State.PLAYING;
+        enemiesEmmiter.setLevel(1);
         frags =0;
         mainShip.startNewGame();
-
         bulletPool.freeAllActiveObjects();
         enemyPool.freeAllActiveObjects();
         explosionPool.freeAllActiveObjects();
