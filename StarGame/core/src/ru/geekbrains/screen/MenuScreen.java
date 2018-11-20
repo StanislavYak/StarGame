@@ -13,7 +13,9 @@ import ru.geekbrains.base.Base2DScreen;
 import ru.geekbrains.math.Rect;
 import ru.geekbrains.sprite.Background;
 import ru.geekbrains.sprite.ButtonExit;
+import ru.geekbrains.sprite.ButtonNewGame;
 import ru.geekbrains.sprite.ButtonPlay;
+import ru.geekbrains.sprite.GameOver;
 import ru.geekbrains.sprite.Star;
 
 public class MenuScreen extends Base2DScreen implements ActionListener {
@@ -30,6 +32,7 @@ public class MenuScreen extends Base2DScreen implements ActionListener {
 
     private ButtonExit buttonExit;
     private ButtonPlay buttonPlay;
+
 
     public MenuScreen(Game game) {
         super();
